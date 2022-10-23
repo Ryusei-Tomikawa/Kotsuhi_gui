@@ -13,4 +13,7 @@
 
 # GUI画面
 適当に作ったけど、こんな画面ができるはず
-![GUI画面](https://user-images.githubusercontent.com/77111746/105332159-a3f9ea80-5c17-11eb-9ee7-62e0e0838993.png)  
+会社名や名前も書いてあるからペンで消してある
+→コードみたら意味ないけど笑
+
+![GUI画面](https://user-images.githubusercontent.com/77111746/197390180-142754ca-3521-46e1-ad52-1249669ee793.PNG)
