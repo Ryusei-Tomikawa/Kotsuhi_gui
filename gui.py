@@ -151,7 +151,7 @@ def main():
     root.title('Tomikawa Create GUI')
     root.geometry('500x360')
 
-    # ウィジェットの作成 padding=フレームの内側とWidgetとの間に空の領域を作成する
+    # フレームの作成 padding=フレームの内側とWidgetとの間に空の領域を作成する
     frame = ttk.Frame(root, padding=10)
     frame.pack()
 
