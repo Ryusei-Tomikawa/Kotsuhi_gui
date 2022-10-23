@@ -15,7 +15,7 @@
 適当に作ったけど、こんな画面ができるはず
 会社名や名前も書いてあるからペンで消してある
 →コードみたら意味ないけど笑
-<p align="center">
-  ![GUI画面](https://user-images.githubusercontent.com/77111746/197390180-142754ca-3521-46e1-ad52-1249669ee793.PNG)
-</p>
+
+![GUI画面](https://user-images.githubusercontent.com/77111746/197390180-142754ca-3521-46e1-ad52-1249669ee793.PNG)
+
 
