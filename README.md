@@ -15,7 +15,4 @@
 適当に作ったけど、こんな画面ができるはず
 会社名や名前も書いてあるからペンで消してある
 →コードみたら意味ないけど笑
-
-![GUI画面](https://user-images.githubusercontent.com/77111746/197390180-142754ca-3521-46e1-ad52-1249669ee793.PNG)
-
-
+![GUI画面](https://user-images.githubusercontent.com/77111746/197391463-d0f5c3f9-63eb-496a-94a4-ba343e6eb8d3.PNG)
