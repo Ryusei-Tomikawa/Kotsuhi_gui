@@ -157,7 +157,7 @@ def main():
     frame.pack()
 
     # タイトル
-    write_label('安川電機  交通費自動化申請GUI', "MSゴシック", "20", 40, 50)
+    write_label('安川電機  交通費申請自動化GUI', "MSゴシック", "20", 40, 50)
     #作成者
     write_label('作成者: 冨川 竜誠', "Times", "10", 370, 95)
     #申請する日付
