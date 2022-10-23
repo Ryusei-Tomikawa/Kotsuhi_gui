@@ -1,0 +1,2 @@
+# Kotsuhi_gui
+自社の交通費申請を行う為のGUIをpythonで作成してみた
