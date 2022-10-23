@@ -28,7 +28,8 @@ def get_combobox(text_, num):
     from_month = 0
     to_month = 0
     from_day = 0
-    to_day = date_now.day
+    # 特に意味はない
+    to_day = date_now.day 
 
     if text_ == 'from_year':
         from_year = num
