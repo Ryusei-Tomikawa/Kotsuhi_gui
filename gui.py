@@ -1,4 +1,3 @@
-import sys
 import datetime
 import tkinter as tk
 from tkinter import *
@@ -7,38 +6,79 @@ from tkinter import ttk
 
 # グローバルだらけできしょコード
 
+# 日付と仮保存変数の初期化
+from_year = 0
+to_year = 0
+from_month = 0
+to_month = 0
+from_day = 0
+to_day = 0
+isKarihozon_ = 2
+
+# main.pyで値を取得する用
+def get_ymd():
+    global from_year
+    global from_month
+    global from_day
+    global to_year
+    global to_month
+    global to_day
+    global isKarihozon_
+
+    return from_year, from_month, from_day, to_year, to_month, to_day, isKarihozon_
+
 def write_label(txt, f, f_num, x_, y_):
     
     title_label = ttk.Label(text=txt, font=(f, f_num, "bold"))
     #左上が(0,0)
     title_label.place(x=x_, y=y_)
 
+def karihozon_check():
+
+    # check_click関数用のグローバル
+    global yes_karihozon
+    global no_karihozon
+
+    yes_karihozon = BooleanVar(value = False)
+    chk_yes_karihozon = ttk.Checkbutton(variable=yes_karihozon, text='仮保存する', command=lambda:check_click(yes_karihozon.get(), '仮保存する')) 
+    chk_yes_karihozon.place(x=70, y=235)
+
+    no_karihozon = BooleanVar(value = False)
+    chk_no_karihozon = ttk.Checkbutton(variable=no_karihozon, text='仮保存しない', command=lambda:check_click(no_karihozon.get(), '仮保存しない')) 
+    chk_no_karihozon.place(x=70, y=280)
+
 def error(message):
         messagebox.showerror('エラーメッセージ', message)
 
+# 日付入力した際のCallback 
 def get_combobox(text_, num):
 
-    
     # 現在日時取得
     date_now = datetime.datetime.now()
 
-    # 毎回初期化は正直あれやけどまぁいいや
-    from_year = 0
-    to_year = 0
-    from_month = 0
-    to_month = 0
-    from_day = 0
-    # 特に意味はない
-    to_day = date_now.day 
+    global from_year
+    global from_month
+    global from_day
+    global to_year
+    global to_month
+    global to_day
 
     if text_ == 'from_year':
         from_year = num
+        from_day = date_now.day
+        to_day = date_now.day
     elif text_ == 'to_year':
         to_year = num
+        from_day = date_now.day
+        to_day = date_now.day
     elif text_ == 'from_month':
         from_month = num
+        from_day = date_now.day
+        to_day = date_now.day
     elif text_ == 'to_month':
         to_month = num
+        from_day = date_now.day
+        to_day = date_now.day
     elif text_ == 'from_day':
         from_day = num
     elif text_ == 'to_day':
@@ -47,12 +87,29 @@ def get_combobox(text_, num):
     global count
     count += 1
 
+    #print('from_year:=', from_year)
+    #print('from_month:=', from_month)
+    #print('from_day:=', from_day)
+    #print('to_year:=', to_year)
+    #print('to_month:=', to_month)
+    #print('to_day:=', to_day)
+
+
+    # 年数がエラーかつ日付が正確に打てた場合→countが＋１にならないためバグ発生
+    # ex. 2025(out) 10(ok) の場合、2025がoutだから10が性格でもcountが＋１にならない
+    # ここのエラー処理は拘るべきだと思うけど。。。
+
     if date_now.year <  from_year or date_now.year < to_year:
         error('その年数はまだ入力できません')
+        count -= 1
     elif date_now.month < from_month or date_now.month < to_month:
         error('その月はまだ入力できません')
+        count -= 1
+    elif (date_now.month == from_month or date_now.month == to_month) and (date_now.day < from_day or date_now.day < to_day):
+        error('その日はまだ入力できません')
+
     
-# 日付入力する関数　他になんかいい方法あるかな～
+# 日付入力する関数
 def entry(txt_, list_, width_, x_, y_):
 
     variable = IntVar()
@@ -86,26 +143,38 @@ def entry(txt_, list_, width_, x_, y_):
 
 def check_click(chk_state, chk_txt):
         
-        global check_state1
-        global check_state2
+        
+        global yes_karihozon
+        global no_karihozon
 
-        global chk_state_
-        chk_state_ = chk_state
+
+        # get_ymdk関数用のグルーバル変数
+        global isKarihozon_
 
         if chk_txt == '仮保存する' and chk_state == True:
-            check_state2.set(False)
+            # 仮保存しないをFalse →仮保存する選択
+            no_karihozon.set(False)
+            isKarihozon_ = 1
 
         elif  chk_txt == '仮保存しない' and chk_state == True:
-            check_state1.set(False)
+            # 仮保存するをFalse →仮保存しない選択
+            yes_karihozon.set(False)
+            isKarihozon_ = 0
 
         else:
-            check_state1.set(False)
-            check_state2.set(False)
+            # 両方をFalse
+            yes_karihozon.set(False)
+            no_karihozon.set(False)
 
 def message_show(message):
-        
-        global chk_state_
+
+        # destroy用
+        global root
+
+        # 日付エラー処理用
         global count
+        # 仮保存エラー処理用
+        global isKarihozon_
 
         day_ = False
         store_ = False
@@ -117,25 +186,26 @@ def message_show(message):
             day_ = True
 
         # 仮保存におけるエラー処理
-        if chk_state_ == False:
+        if isKarihozon_ == 2:
             error('仮保存選択がされていません')
             store_ = False
-        elif chk_state_ == True:
+        elif isKarihozon_ == 0 or isKarihozon_ == 1:
             store_ = True
 
-
         # 自動化するかどうかの最終確認
-        if message == "交通費自動化申請を開始しますか" and day_ == True and store_ == True:
+        if message == "交通費自動化申請を開始しますか?" and day_ == True and store_ == True:
              auto_res = messagebox.askyesno("最終確認", message)
              if auto_res == True:
-                print('ここで自動化プログラムを実行!')
+                # mainloopを抜ける処理
+                root.destroy()
              else:
                 messagebox.showinfo('再確認', '元の画面に戻ります')
 
         elif message == "ウィンドウを閉じてもよろしいですか？":
             close_res = messagebox.askyesno("最終確認", message)
             if close_res == True:
-                sys.exit()
+                # mainloopを抜ける処理
+                root.destroy()
             else:
                 messagebox.showinfo('再確認', '元の画面に戻ります')
 
@@ -144,15 +214,17 @@ def push_button(txt_, text_, width_, x_, y_):
     button = ttk.Button(text=txt_, width=width_, command=lambda:message_show(text_))
     button.place(x=x_, y=y_)
 
-# メイン関数の詳細
-def main():
+# GUI作成する関数
+def create_gui():
+
+    global root 
 
     #メインウィンドウ立ち上げ
     root = Tk()
     root.title('Tomikawa Create GUI')
     root.geometry('500x360')
 
-    # フレームの作成 padding=フレームの内側とWidgetとの間に空の領域を作成する
+    # ウィジェットの作成 padding=フレームの内側とWidgetとの間に空の領域を作成する
     frame = ttk.Frame(root, padding=10)
     frame.pack()
 
@@ -174,10 +246,13 @@ def main():
     global count
     count = 0
 
-    # 2030年まで
+    # 現在の年数から5年前まで
+    # 現在日時取得
+    date_now = datetime.datetime.now()
+
     year = []
-    for i in range(9):
-        year.append(2022 + i)
+    for i in range(6):
+        year.append((date_now.year - 5) + i)
     # 年数入力 ～から
     entry('from_year', year, 4, 140, 130)
     # ～まで
@@ -215,32 +290,16 @@ def main():
 
     ###########################################   仮保存する or しない  ###########################################
 
-    # 他になんかいい書き方あるかなぁ
-
-    global chk_state_
-    global check_state1
-    global check_state2
-
-    chk_state_ = False
-
-    check_state1 = BooleanVar(value = False)
-    chk1 = ttk.Checkbutton(variable=check_state1, text='仮保存する', command=lambda:check_click(check_state1.get(), '仮保存する')) 
-    chk1.place(x=70, y=235)
-
-    check_state2 = BooleanVar(value = False)
-    chk2 = ttk.Checkbutton(variable=check_state2, text='仮保存しない', command=lambda:check_click(check_state2.get(), '仮保存しない')) 
-    chk2.place(x=70, y=280)
+    # 仮保存チェックボタン押したときの処理（片方しか押せない）
+    karihozon_check()
 
     ###########################################       ボタン処理        ############################################
 
     # 開始ボタン
-    push_button("開始", "交通費自動化申請を開始しますか", 20, 300, 230)
+    push_button("開始", "交通費自動化申請を開始しますか?", 20, 300, 230)
     #ウィンドウ閉じるボタン
     push_button("終了", "ウィンドウを閉じてもよろしいですか？", 20, 300, 280)
 
     # ウィンドウの表示するための無限ループ
     root.mainloop()
 
-# メイン関数
-if __name__ == "__main__":
-    main()
