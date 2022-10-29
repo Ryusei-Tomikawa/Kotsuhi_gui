@@ -155,14 +155,19 @@ def check_click(chk_state, chk_txt):
             # 仮保存しないをFalse →仮保存する選択
             no_karihozon.set(False)
             isKarihozon_ = 1
-
         elif  chk_txt == '仮保存しない' and chk_state == True:
             # 仮保存するをFalse →仮保存しない選択
             yes_karihozon.set(False)
             isKarihozon_ = 0
-
+        elif chk_txt == '仮保存する' and chk_state == False:
+            # 仮保存するをFalse →仮保存しないを選択
+            no_karihozon.set(True)
+            isKarihozon_ = 0
+        elif chk_txt == '仮保存しない' and chk_state == False:
+            # 仮保存しないをFalse →仮保存するを選択
+            yes_karihozon.set(True)
+            isKarihozon_ = 1
         else:
-            # 両方をFalse
             yes_karihozon.set(False)
             no_karihozon.set(False)
 
