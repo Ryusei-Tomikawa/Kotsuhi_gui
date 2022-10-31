@@ -98,8 +98,8 @@ def get_combobox(text_, num):
     # 年数がエラーかつ日付が正確に打てた場合→countが＋１にならないためバグ発生
     # ex. 2025(out) 10(ok) の場合、2025がoutだから10が性格でもcountが＋１にならない
     # ここのエラー処理は拘るべきだと思うけど。。。
-
-    if date_now.month < from_month or date_now.month < to_month:
+    # to_monthの条件に関しては10月の時、１１月の申請できるようにするために+1している
+    if date_now.month < from_month or date_now.month + 1 < to_month:
         error('その月はまだ入力できません')
         count -= 1
     elif (date_now.month == from_month or date_now.month == to_month) and (date_now.day < from_day or date_now.day < to_day):
@@ -202,11 +202,10 @@ def message_show(message):
              else:
                 messagebox.showinfo('再確認', '元の画面に戻ります')
 
-        elif message == "ウィンドウを閉じてもよろしいですか？":
+        elif message == "GUIウィンドウを閉じてもよろしいですか？":
             close_res = messagebox.askyesno("最終確認", message)
             if close_res == True:
-                # mainloopを抜ける処理
-                root.destroy()
+                sys.exit()
             else:
                 messagebox.showinfo('再確認', '元の画面に戻ります')
 
@@ -214,6 +213,13 @@ def push_button(txt_, text_, width_, x_, y_):
 
     button = ttk.Button(text=txt_, width=width_, command=lambda:message_show(text_))
     button.place(x=x_, y=y_)
+
+def window_delete():
+    end_res = messagebox.askyesno("GUI終了", "GUIウィンドウを閉じてもよろしいですか？")
+    if end_res == True:
+        sys.exit()
+    else:
+        messagebox.showinfo('再確認', '元の画面に戻ります')
 
 # GUI作成する関数
 def create_gui():
@@ -322,7 +328,10 @@ def create_gui():
     # 開始ボタン
     push_button("開始", "交通費自動化申請を開始しますか?", 20, 300, 280)
     #ウィンドウ閉じるボタン
-    push_button("終了", "ウィンドウを閉じてもよろしいですか？", 20, 300, 330)
+    push_button("終了", "GUIウィンドウを閉じてもよろしいですか？", 20, 300, 330)
+
+    # ✕ボタンを押すとウィンドウが閉じる
+    root.protocol("WM_DELETE_WINDOW", window_delete)
 
     # ウィンドウの表示するための無限ループ
     root.mainloop()
