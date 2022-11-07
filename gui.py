@@ -15,6 +15,59 @@ from_day = 0
 to_day = 0
 isKarihozon_ = 2
 
+def judge_ymd(from_year_, from_month_, from_day_, to_year_, to_month_, to_day_):
+
+    # 現在日時取得
+    date_now = datetime.datetime.now()
+
+    judge_ = False
+
+    if date_now.year < from_year_ or date_now.year < to_year_:
+        error('その年はまだ入力できません')
+    elif date_now.month < from_month_:
+        error('～からのその月はまだ入力できません')
+    elif date_now.month < to_month_:
+        error('～までのその月はまだ入力できません')
+    else:
+        judge_ = True
+
+    return judge_
+
+# 最終値をセットする
+def set_ymd():
+    
+    ok_ = False
+    f_y = f_m = f_d = t_y = t_m = t_d =  0
+    global from_year_combobox
+    global from_month_combobox
+    global from_day_combobox
+    global to_year_combobox
+    global to_month_combobox
+    global to_day_combobox
+
+    f_y = int(from_year_combobox.get())
+    f_m = int(from_month_combobox.get())
+    f_d = int(from_day_combobox.get())
+    t_y = int(to_year_combobox.get())
+    t_m = int(to_month_combobox.get())
+    t_d = int(to_day_combobox.get())
+
+    ok_ = judge_ymd(f_y, f_m, f_d, t_y, t_m, t_d)
+
+    if ok_ == True:
+        global from_year
+        global from_month
+        global from_day
+        global to_year
+        global to_month
+        global to_day
+
+        from_year, from_month, from_day = f_y, f_m, f_d
+        to_year, to_month, to_day = t_y, t_m, t_d
+
+    return ok_
+    
+
 # main.pyで値を取得する用
 def get_ymd():
     global from_year
@@ -50,94 +103,37 @@ def karihozon_check():
 def error(message):
         messagebox.showerror('エラーメッセージ', message)
 
-# 日付入力した際のCallback 
-def get_combobox(text_, num):
-
-    # 現在日時取得
-    date_now = datetime.datetime.now()
-
-    global from_year
-    global from_month
-    global from_day
-    global to_year
-    global to_month
-    global to_day
-
-    if text_ == 'from_year':
-        from_year = num
-        from_day = date_now.day
-        to_day = date_now.day
-    elif text_ == 'to_year':
-        to_year = num
-        from_day = date_now.day
-        to_day = date_now.day
-    elif text_ == 'from_month':
-        from_month = num
-        from_day = date_now.day
-        to_day = date_now.day
-    elif text_ == 'to_month':
-        to_month = num
-        from_day = date_now.day
-        to_day = date_now.day
-    elif text_ == 'from_day':
-        from_day = num
-    elif text_ == 'to_day':
-        to_day = num
-
-    global count
-    count += 1
-
-    #print('from_year:=', from_year)
-    #print('from_month:=', from_month)
-    #print('from_day:=', from_day)
-    #print('to_year:=', to_year)
-    #print('to_month:=', to_month)
-    #print('to_day:=', to_day)
-
-
-    # 年数がエラーかつ日付が正確に打てた場合→countが＋１にならないためバグ発生
-    # ex. 2025(out) 10(ok) の場合、2025がoutだから10が性格でもcountが＋１にならない
-    # ここのエラー処理は拘るべきだと思うけど。。。
-    # to_monthの条件に関しては10月の時、１１月の申請できるようにするために+1している
-    if date_now.month < from_month or date_now.month + 1 < to_month:
-        error('その月はまだ入力できません')
-        count -= 1
-    elif (date_now.month == from_month or date_now.month == to_month) and (date_now.day < from_day or date_now.day < to_day):
-        error('その日はまだ入力できません')
-        count -= 1
-
-    
 # 日付入力する関数
 def entry(txt_, list_, width_, x_, y_):
 
     variable = IntVar()
     variable.set('')
 
+    global from_year_combobox
+    global from_month_combobox
+    global from_day_combobox
+    global to_year_combobox
+    global to_month_combobox
+    global to_day_combobox
+
     if txt_ == 'from_year':
         from_year_combobox = ttk.Combobox(width= width_, height = len(list_), justify="center", values = list_, textvariable = variable)
         from_year_combobox.place(x=x_, y=y_)
-        from_year_combobox.bind('<<ComboboxSelected>>', lambda e: get_combobox(txt_, variable.get()))
     elif txt_ == 'to_year':
         to_year_combobox = ttk.Combobox(width= width_, height = len(list_), justify="center", values = list_, textvariable = variable)
         to_year_combobox.place(x=x_, y=y_)
-        to_year_combobox.bind('<<ComboboxSelected>>', lambda e: get_combobox(txt_, variable.get()))
     elif txt_ == 'from_month':
         from_month_combobox = ttk.Combobox(width= width_, height = len(list_), justify="center", values=list_, textvariable = variable)
         from_month_combobox.place(x=x_, y=y_)
-        from_month_combobox.bind('<<ComboboxSelected>>', lambda e: get_combobox(txt_, variable.get()))
     elif txt_ == 'to_month':
         to_month_combobox = ttk.Combobox(width= width_, height = len(list_), justify="center", values = list_, textvariable = variable)
         to_month_combobox.place(x=x_, y=y_)
-        to_month_combobox.bind('<<ComboboxSelected>>', lambda e: get_combobox(txt_, variable.get()))
     elif txt_ == 'from_day':
         from_day_combobox = ttk.Combobox(width= width_, height = len(list_), justify="center", values = list_, textvariable = variable)
         from_day_combobox.place(x=x_, y=y_)
-        from_day_combobox.bind('<<ComboboxSelected>>', lambda e: get_combobox(txt_, variable.get()))
     elif txt_ == 'to_day':
         to_day_combobox = ttk.Combobox(width= width_, height = len(list_), justify="center", values = list_, textvariable = variable)
         to_day_combobox.place(x=x_, y=y_)
-        to_day_combobox.bind('<<ComboboxSelected>>', lambda e: get_combobox(txt_, variable.get()))
-
 
 def check_click(chk_state, chk_txt):
         
@@ -172,33 +168,15 @@ def message_show(message):
         # destroy用
         global root
 
-        # 日付エラー処理用
-        global count
-        # 仮保存エラー処理用
-        global isKarihozon_
-
-        day_ = False
-        store_ = False
-
-        # 日付に関するエラー処理 入力回数: 6回
-        if count < 6:
-            error('入力項目が足りません')
-        elif count >= 6:
-            day_ = True
-
-        # 仮保存におけるエラー処理
-        if isKarihozon_ == 2:
-            error('仮保存選択がされていません')
-            store_ = False
-        elif isKarihozon_ == 0 or isKarihozon_ == 1:
-            store_ = True
+        ok = False
 
         # 自動化するかどうかの最終確認
-        if message == "交通費自動化申請を開始しますか?" and day_ == True and store_ == True:
+        if message == "交通費自動化申請を開始しますか?":
              auto_res = messagebox.askyesno("最終確認", message)
              if auto_res == True:
-                # mainloopを抜ける処理
-                root.destroy()
+                ok = set_ymd()
+                if ok == True:
+                    root.destroy()
              else:
                 messagebox.showinfo('再確認', '元の画面に戻ります')
 
@@ -275,9 +253,6 @@ def create_gui():
     canvas.create_image(0, 0, image=yaskawa, anchor=tk.NW)
 
     #####################################　　日付処理　　　#########################################
-
-    global count
-    count = 0
 
     # 現在の年数から5年前まで
     year = []
