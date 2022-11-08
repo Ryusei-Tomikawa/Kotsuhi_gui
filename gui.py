@@ -5,15 +5,16 @@ from tkinter import messagebox
 from tkinter import ttk
 
 # グローバルだらけできしょコード
-
 # 日付と仮保存変数の初期化
 from_year = 0
-to_year = 0
 from_month = 0
-to_month = 0
 from_day = 0
+to_year = 0
+to_month = 0
 to_day = 0
-isKarihozon_ = 2
+# 初期は仮保存しない
+isKarihozon_ = 0
+auto_start_ = False
 
 def judge_ymd(from_year_, from_month_, from_day_, to_year_, to_month_, to_day_):
 
@@ -21,19 +22,25 @@ def judge_ymd(from_year_, from_month_, from_day_, to_year_, to_month_, to_day_):
     date_now = datetime.datetime.now()
 
     judge_ = False
+    
+    # 空かどうかのチェック
+    judge_list_ = [from_year_, from_month_, from_day_, to_year_, to_month_, to_day_]
+    for i in range(len(judge_list_)):
+        if judge_list_[i] == '':
+            error('日付が未入力です')
+            return judge_
 
-    if date_now.year < from_year_ or date_now.year < to_year_:
+    if int(from_year_) - int(to_year_) > 0 or int(from_year_) - int(to_year_) < 0 :
         error('その年はまだ入力できません')
-    elif date_now.month < from_month_:
-        error('～からのその月はまだ入力できません')
-    elif date_now.month < to_month_:
-        error('～までのその月はまだ入力できません')
+    elif int(from_month_) - int(to_month_) > 0:
+        error('その月はまだ入力できません')
+    elif int(from_month) < int(to_month) and int(from_day_) - int(to_day_) > 0:
+        error('その日にちはまだ入力できません')
     else:
         judge_ = True
 
     return judge_
 
-# 最終値をセットする
 def set_ymd():
     
     ok_ = False
@@ -45,12 +52,12 @@ def set_ymd():
     global to_month_combobox
     global to_day_combobox
 
-    f_y = int(from_year_combobox.get())
-    f_m = int(from_month_combobox.get())
-    f_d = int(from_day_combobox.get())
-    t_y = int(to_year_combobox.get())
-    t_m = int(to_month_combobox.get())
-    t_d = int(to_day_combobox.get())
+    f_y = from_year_combobox.get()
+    f_m = from_month_combobox.get()
+    f_d = from_day_combobox.get()
+    t_y = to_year_combobox.get()
+    t_m = to_month_combobox.get()
+    t_d = to_day_combobox.get()
 
     ok_ = judge_ymd(f_y, f_m, f_d, t_y, t_m, t_d)
 
@@ -62,13 +69,11 @@ def set_ymd():
         global to_month
         global to_day
 
-        from_year, from_month, from_day = f_y, f_m, f_d
-        to_year, to_month, to_day = t_y, t_m, t_d
+        from_year, from_month, from_day = int(f_y), int(f_m), int(f_d)
+        to_year, to_month, to_day = int(t_y), int(t_m), int(t_d)
 
     return ok_
     
-
-# main.pyで値を取得する用
 def get_ymd():
     global from_year
     global from_month
@@ -94,20 +99,18 @@ def karihozon_check():
 
     yes_karihozon = BooleanVar(value = False)
     chk_yes_karihozon = ttk.Checkbutton(variable=yes_karihozon, text='仮保存する', command=lambda:check_click(yes_karihozon.get(), '仮保存する')) 
-    chk_yes_karihozon.place(x=70, y=285)
+    chk_yes_karihozon.place(x=70, y=245)
 
-    no_karihozon = BooleanVar(value = False)
+    no_karihozon = BooleanVar(value = True)
     chk_no_karihozon = ttk.Checkbutton(variable=no_karihozon, text='仮保存しない', command=lambda:check_click(no_karihozon.get(), '仮保存しない')) 
-    chk_no_karihozon.place(x=70, y=330)
+    chk_no_karihozon.place(x=70, y=280)
 
 def error(message):
-        messagebox.showerror('エラーメッセージ', message)
+        messagebox.showerror('Error message', message)
 
+    
 # 日付入力する関数
-def entry(txt_, list_, width_, x_, y_):
-
-    variable = IntVar()
-    variable.set('')
+def input_date(txt_, list_, width_, x_, y_, init_day):
 
     global from_year_combobox
     global from_month_combobox
@@ -117,24 +120,35 @@ def entry(txt_, list_, width_, x_, y_):
     global to_day_combobox
 
     if txt_ == 'from_year':
-        from_year_combobox = ttk.Combobox(width= width_, height = len(list_), justify="center", values = list_, textvariable = variable)
+        from_year_combobox = ttk.Combobox(width= width_, height = len(list_), justify="center", values = list_)
         from_year_combobox.place(x=x_, y=y_)
-    elif txt_ == 'to_year':
-        to_year_combobox = ttk.Combobox(width= width_, height = len(list_), justify="center", values = list_, textvariable = variable)
-        to_year_combobox.place(x=x_, y=y_)
-    elif txt_ == 'from_month':
-        from_month_combobox = ttk.Combobox(width= width_, height = len(list_), justify="center", values=list_, textvariable = variable)
-        from_month_combobox.place(x=x_, y=y_)
-    elif txt_ == 'to_month':
-        to_month_combobox = ttk.Combobox(width= width_, height = len(list_), justify="center", values = list_, textvariable = variable)
-        to_month_combobox.place(x=x_, y=y_)
-    elif txt_ == 'from_day':
-        from_day_combobox = ttk.Combobox(width= width_, height = len(list_), justify="center", values = list_, textvariable = variable)
-        from_day_combobox.place(x=x_, y=y_)
-    elif txt_ == 'to_day':
-        to_day_combobox = ttk.Combobox(width= width_, height = len(list_), justify="center", values = list_, textvariable = variable)
-        to_day_combobox.place(x=x_, y=y_)
+        from_year_combobox.set(str(init_day))
 
+    elif txt_ == 'to_year':
+        to_year_combobox = ttk.Combobox(width= width_, height = len(list_), justify="center", values = list_)
+        to_year_combobox.place(x=x_, y=y_)
+        to_year_combobox.set(str(init_day))
+
+    elif txt_ == 'from_month':
+        from_month_combobox = ttk.Combobox(width= width_, height = len(list_), justify="center", values=list_)
+        from_month_combobox.place(x=x_, y=y_)
+        from_month_combobox.set(str(init_day))
+
+    elif txt_ == 'to_month':
+        to_month_combobox = ttk.Combobox(width= width_, height = len(list_), justify="center", values = list_)
+        to_month_combobox.place(x=x_, y=y_)
+        to_month_combobox.set(str(init_day))
+
+    elif txt_ == 'from_day':
+        from_day_combobox = ttk.Combobox(width= width_, height = len(list_), justify="center", values = list_)
+        from_day_combobox.place(x=x_, y=y_)
+        from_day_combobox.set(str(init_day))
+
+    elif txt_ == 'to_day':
+        to_day_combobox = ttk.Combobox(width= width_, height = len(list_), justify="center", values = list_)
+        to_day_combobox.place(x=x_, y=y_)
+        to_day_combobox.set(str(init_day))
+        
 def check_click(chk_state, chk_txt):
         
         global yes_karihozon
@@ -167,6 +181,7 @@ def message_show(message):
 
         # destroy用
         global root
+        global auto_start_
 
         ok = False
 
@@ -174,31 +189,41 @@ def message_show(message):
         if message == "交通費自動化申請を開始しますか?":
              auto_res = messagebox.askyesno("最終確認", message)
              if auto_res == True:
+                auto_start_ = True
                 ok = set_ymd()
                 if ok == True:
                     root.destroy()
-             else:
-                messagebox.showinfo('再確認', '元の画面に戻ります')
 
         elif message == "GUIウィンドウを閉じてもよろしいですか？":
             close_res = messagebox.askyesno("最終確認", message)
             if close_res == True:
-                sys.exit()
-            else:
-                messagebox.showinfo('再確認', '元の画面に戻ります')
-
+                auto_start_ = False
+                # mainloopを抜ける処理
+                root.destroy()
+        elif message == '交通費申請を開始します.マウスやキーボードは触れないでください.':
+            messagebox.showinfo('注意', '交通費申請を開始します.マウスやキーボードは触れないでください.')
+            
 def push_button(txt_, text_, width_, x_, y_):
 
     button = ttk.Button(text=txt_, width=width_, command=lambda:message_show(text_))
     button.place(x=x_, y=y_)
 
+# ×ボタン押した際の処理
 def window_delete():
-    end_res = messagebox.askyesno("GUI終了", "GUIウィンドウを閉じてもよろしいですか？")
+    
+    global root
+    global auto_start_
+    
+    end_res = messagebox.askyesno("GUI画面終了", "GUIウィンドウを閉じてもよろしいですか？")
+    
     if end_res == True:
-        sys.exit()
-    else:
-        messagebox.showinfo('再確認', '元の画面に戻ります')
+        auto_start_ = False
+        # mainloopを抜ける処理
+        root.destroy()
 
+def end():
+    messagebox.showinfo('終了通知', "交通費自動化申請を終了しました。")
+    
 # GUI作成する関数
 def create_gui():
 
@@ -206,8 +231,10 @@ def create_gui():
 
     #メインウィンドウ立ち上げ
     root = Tk()
-    root.title('Tomikawa Create GUI')
-    root.geometry('500x400')
+    root.title('YFTS22 交通費申請自動化GUI')
+    root.geometry('490x370')
+    root.geometry('+425+0')
+    root.resizable(width=False, height=False)
 
     # ウィジェットの作成 padding=フレームの内側とWidgetとの間に空の領域を作成する
     frame = ttk.Frame(root, padding=10)
@@ -232,67 +259,76 @@ def create_gui():
     elif today.weekday() == 6:
         day_txt = '日'
 
-    # タイトル
-    write_label('安川電機  交通費申請自動化GUI', "MSゴシック", "20", 40, 55)
-    #作成者
-    write_label('作成者: 冨川 竜誠', "Times", "10", 370, 100)
-    # 今日の日付
-    write_label('今日の日付は', "MSゴシック", "12", 80, 130)
-    write_label(str(date_now.year) + '年', "MSゴシック", "12", 190, 130)
-    write_label(str(date_now.month) + '月', "MSゴシック", "12", 245, 130)
-    write_label(str(date_now.day) + '日', "MSゴシック", "12", 285, 130)
-    write_label(day_txt  + '曜日です', "MSゴシック", "12", 325, 130)
-
-    #申請する日付
-    write_label('申請する日付:', "Times", "12", 35, 180)
-
     # 安川画像表示
-    yaskawa = tk.PhotoImage(file='yaskawa.png')
+    path=__file__
+    name = path.rstrip('auto_gui.py')+'yaskawa.png'
+    yaskawa = tk.PhotoImage(file=name)
     canvas = tk.Canvas(bg="black", width=190, height=37)
     canvas.place(x=155, y=5)
     canvas.create_image(0, 0, image=yaskawa, anchor=tk.NW)
+    
+    # タイトル
+    write_label('YFTS22 交通費申請自動化GUI', "MSゴシック", "20", 40, 50)
+    #作成者
+    write_label('作成者: 冨川 竜誠', "Times", "10", 365, 5)
+    # 今日の日付
+    write_label('今日の日付は', "MSゴシック", "12", 85, 105)
+    write_label(str(date_now.year) + '年', "MSゴシック", "12", 195, 105)
+    write_label(str(date_now.month) + '月', "MSゴシック", "12", 250, 105)
+    write_label(str(date_now.day) + '日', "MSゴシック", "12", 290, 105)
+    write_label(day_txt  + '曜日です', "MSゴシック", "12", 320, 105)
+
+    # 申請する日付
+    write_label('申請する日付:', "Times", "12", 35, 150)
+    
+    # ※記載
+    write_label('※ウィンドウは動かさないことを推奨します。', "MSゴシック", "9", 120, 320)
 
     #####################################　　日付処理　　　#########################################
 
-    # 現在の年数から5年前まで
+
+    monday = today - datetime.timedelta(days=today.weekday())
+    friday = today + datetime.timedelta(days=4)
+
+    # 現在の年数から5年後まで
     year = []
     for i in range(6):
         year.append((date_now.year - 5) + i)
     # 年数入力 ～から
-    entry('from_year', year, 4, 155, 180)
+    input_date('from_year', year, 4, 155, 150, int(monday.year))
     # ～まで
-    entry('to_year', year, 4, 155, 230)
+    input_date('to_year', year, 4, 155, 200, int(friday.year))
     # 年ラベル ～から
-    write_label('年', "Times", "12", 210, 180)
+    write_label('年', "Times", "12", 210, 150)
     # ～まで
-    write_label('年', "Times", "12", 210, 230)
+    write_label('年', "Times", "12", 210, 200)
 
     # 1～12月
     month = []
     for i in range(12):
         month.append(i+1)
     # 月入力 ～から
-    entry('from_month', month, 4, 235, 180)
+    input_date('from_month', month, 4, 235, 150, int(monday.month))
     # ～まで
-    entry('to_month', month, 4, 235, 230)
+    input_date('to_month', month, 4, 235, 200, int(friday.month))
     # 月ラベル  ～から
-    write_label('月', "Times", "12", 285, 180)
+    write_label('月', "Times", "12", 285, 150)
     # ～まで
-    write_label('月', "Times", "12", 285, 230)
+    write_label('月', "Times", "12", 285, 200)
 
     # 1～31日
     day = []
     for i in range(31):
         day.append(i+1)
     # 日入力 ～から
-    entry('from_day', day, 4, 310, 180)
+    input_date('from_day', day, 4, 310, 150, int(monday.day))
     # ～まで
-    entry('to_day', day, 4, 310, 230)
+    input_date('to_day', day, 4, 310, 200, int(friday.day))
     # 日ラベル ～から
-    write_label('日  から', "Times", "12", 360, 180)
+    write_label('日  から', "Times", "12", 360, 150)
     # ～まで
-    write_label('日  まで', "Times", "12", 360, 230)
-
+    write_label('日  まで', "Times", "12", 360, 200)
+    
     ###########################################   仮保存する or しない  ###########################################
 
     # 仮保存チェックボタン押したときの処理（片方しか押せない）
@@ -301,13 +337,14 @@ def create_gui():
     ###########################################       ボタン処理        ############################################
 
     # 開始ボタン
-    push_button("開始", "交通費自動化申請を開始しますか?", 20, 300, 280)
+    push_button("開始", "交通費自動化申請を開始しますか?", 20, 300, 245)
     #ウィンドウ閉じるボタン
-    push_button("終了", "GUIウィンドウを閉じてもよろしいですか？", 20, 300, 330)
+    push_button("終了", "GUIウィンドウを閉じてもよろしいですか？", 20, 300, 285)
 
-    # ✕ボタンを押すとウィンドウが閉じる
+    # ×ボタンでウィンドウ消す
     root.protocol("WM_DELETE_WINDOW", window_delete)
-
+    
     # ウィンドウの表示するための無限ループ
     root.mainloop()
+
 
