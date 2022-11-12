@@ -6,20 +6,10 @@ from tkinter import ttk
 
 # グローバルだらけできしょコード
 # 日付と仮保存変数の初期化
-from_year = 0
-from_month = 0
-from_day = 0
-to_year = 0
-to_month = 0
-to_day = 0
-# 初期は仮保存しない
-isKarihozon_ = 0
+from_year = from_month = from_day = to_year = to_month = to_day = isKarihozon_ = 0
 auto_start_ = False
 
 def judge_ymd(from_year_, from_month_, from_day_, to_year_, to_month_, to_day_):
-
-    # 現在日時取得
-    date_now = datetime.datetime.now()
 
     judge_ = False
     
@@ -108,7 +98,6 @@ def karihozon_check():
 def error(message):
         messagebox.showerror('Error message', message)
 
-    
 # 日付入力する関数
 def input_date(txt_, list_, width_, x_, y_, init_day):
 
@@ -200,29 +189,19 @@ def message_show(message):
                 auto_start_ = False
                 # mainloopを抜ける処理
                 root.destroy()
+                
         elif message == '交通費申請を開始します.マウスやキーボードは触れないでください.':
-            messagebox.showinfo('注意', '交通費申請を開始します.マウスやキーボードは触れないでください.')
-            
-def push_button(txt_, text_, width_, x_, y_):
+            messagebox.showwarning('注意', message)
+        
+        elif message == '交通費自動化申請を終了しました。'
+            messagebox.showinfo('終了通知', message)
+           
+def push_button(txt_, width_, x_, y_):
 
-    button = ttk.Button(text=txt_, width=width_, command=lambda:message_show(text_))
+    button = ttk.Button(text=txt_, width=width_)
+    button.bind('<Return>', lambda event:message_show(txt_))
+    button.bind('<Button-1>', lambda event:message_show(txt_))
     button.place(x=x_, y=y_)
-
-# ×ボタン押した際の処理
-def window_delete():
-    
-    global root
-    global auto_start_
-    
-    end_res = messagebox.askyesno("GUI画面終了", "GUIウィンドウを閉じてもよろしいですか？")
-    
-    if end_res == True:
-        auto_start_ = False
-        # mainloopを抜ける処理
-        root.destroy()
-
-def end():
-    messagebox.showinfo('終了通知', "交通費自動化申請を終了しました。")
     
 # GUI作成する関数
 def create_gui():
@@ -337,12 +316,12 @@ def create_gui():
     ###########################################       ボタン処理        ############################################
 
     # 開始ボタン
-    push_button("開始", "交通費自動化申請を開始しますか?", 20, 300, 245)
+    push_button("開始", 20, 300, 245)
     #ウィンドウ閉じるボタン
-    push_button("終了", "GUIウィンドウを閉じてもよろしいですか？", 20, 300, 285)
+    push_button("終了", 20, 300, 285)
 
     # ×ボタンでウィンドウ消す
-    root.protocol("WM_DELETE_WINDOW", window_delete)
+    root.protocol("WM_DELETE_WINDOW", root.destroy())
     
     # ウィンドウの表示するための無限ループ
     root.mainloop()
